@@ -18,11 +18,26 @@
  * Contact me on <mailpatrickkr@gmail.com>
  */
 
-rootProject.name = "comcigan-lib"
+package io.teamif.patrick.comcigan
 
-pluginManagement {
-    repositories {
-        maven("https://plugins.gradle.org/m2/")
-        maven("https://dl.bintray.com/kotlin/kotlin-dev/")
+import org.junit.Test
+import kotlin.test.assertEquals
+
+/**
+ * A test class for simple [ComciganSchool]
+ *
+ * @author PatrickKR
+ */
+class ComciganAPITest {
+    @Test
+    fun schoolTest() {
+        val name = "유성중"
+        ComciganAPI.INSTANCE.newSchool(name).run {
+            println(schoolData.toString())
+            println(schoolData.THIS_WEEK.grade(3).classroom(9).MONDAY.period(1).FULL_SUBJECT)
+            assertEquals(schoolName, "유성중학교")
+            assertEquals(schoolCode, "65543")
+            refresh()
+        }
     }
 }
