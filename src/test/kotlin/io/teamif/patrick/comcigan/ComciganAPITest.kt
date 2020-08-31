@@ -32,9 +32,8 @@ class ComciganAPITest {
     @Test
     fun schoolTest() {
         val name = "유성중"
-        ComciganAPI.INSTANCE.newSchool(name).run {
+        ComciganAPI.newSchool(name).run {
             println(schoolData.toString())
-            println(schoolData.THIS_WEEK.grade(3).classroom(9).MONDAY.period(1).FULL_SUBJECT)
             assertEquals(schoolName, "유성중학교")
             assertEquals(schoolCode, "65543")
             refresh()

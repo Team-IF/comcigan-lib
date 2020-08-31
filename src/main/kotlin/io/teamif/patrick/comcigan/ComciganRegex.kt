@@ -44,18 +44,4 @@ object ComciganRegex {
     val TEACHER_ID_REGEX = "(?<=성명=자료\\.)자료\\d+".toPattern()
     @JvmStatic
     val SUBJECT_ID_REGEX = "(?<=자료\\.)자료\\d+(?=\\[sb])".toPattern()
-
-    /**
-     * Returns the first matching group
-     *
-     * @param string the input for regex matching
-     * @return matched string. null when no matching group found.
-     */
-    @JvmStatic
-    fun Pattern.search(string: String): String? {
-        val matcher = matcher(string)
-
-        return if (matcher.find()) matcher.group()
-        else null
-    }
 }

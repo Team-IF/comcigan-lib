@@ -27,19 +27,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `maven-publish`
     signing
-    kotlin("jvm") version "1.4-M3"
-    id("org.jetbrains.dokka") version "1.4-mc-1"
+    kotlin("jvm") version "1.4.0"
+    id("org.jetbrains.dokka") version "1.4.0-rc"
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 group = "io.teamif"
-version = "1.0"
+version = "1.1"
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
     maven("https://jcenter.bintray.com/")
-    maven("https://dl.bintray.com/kotlin/kotlin-eap/")
-    maven("https://dl.bintray.com/kotlin/kotlin-dev/")
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
@@ -50,22 +48,6 @@ dependencies {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
-    }
-
-    create<Jar>("sourcesJar") {
-        archiveClassifier.set("sources")
-        from(sourceSets["main"].allSource)
-    }
-
-    create<Jar>("dokkaJar") {
-        dependsOn("dokkaHtml")
-        from("$buildDir/dokka/html/") {
-            include("**")
-        }
-        from("$rootDir/src/main/resources/") {
-            include("**")
-        }
-        archiveClassifier.set("javadoc")
     }
 
     withType<DokkaTask> {
@@ -82,6 +64,22 @@ tasks {
 
     withType<ShadowJar> {
         archiveClassifier.set("")
+    }
+
+    create<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(sourceSets["main"].allSource)
+    }
+
+    create<Jar>("dokkaJar") {
+        dependsOn("dokkaHtml")
+        from("$buildDir/dokka/html/") {
+            include("**")
+        }
+        from("$rootDir/src/main/resources/") {
+            include("**")
+        }
+        archiveClassifier.set("javadoc")
     }
 }
 
@@ -104,7 +102,7 @@ try {
                             password = project.property("centralPassword").toString()
                         }
 
-                        url = if (version.toString().endsWith("SNAPSHOT")) {
+                        url = if (version.endsWith("SNAPSHOT")) {
                             uri("https://oss.sonatype.org/content/repositories/snapshots/")
                         } else {
                             uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")

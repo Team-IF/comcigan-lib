@@ -20,13 +20,9 @@
 
 package io.teamif.patrick.comcigan
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
-import io.teamif.patrick.comcigan.ComciganRegex.search
-import java.io.StringReader
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.regex.Pattern
 import kotlin.jvm.Throws
 
 /**
@@ -34,63 +30,60 @@ import kotlin.jvm.Throws
  *
  * @author PatrickKR
  */
-class ComciganAPI private constructor() {
-    companion object {
-        /**
-         * Gets [ComciganAPI] instance
-         */
-        @JvmStatic
-        val INSTANCE: ComciganAPI
-            get() {
-                if (INTERNAL == null) {
-                    INTERNAL = ComciganAPI()
-                }
-                return requireNotNull(INTERNAL)
-            }
-        @JvmStatic
-        private var INTERNAL: ComciganAPI? = null
-        @JvmStatic
-        internal val CHARSET = "EUC-KR"
-        @JvmStatic
-        private val ROUTE: String
-        @JvmStatic
-        internal val PREFIX: String
-        @JvmStatic
-        private val ORIGINAL_ID: String
-        @JvmStatic
-        internal val DAILY_ID: String
-        @JvmStatic
-        internal val TEACHER_ID: String
-        @JvmStatic
-        internal val SUBJECT_ID: String
-        @JvmStatic
-        internal val BASE_URL: String
-        @JvmStatic
-        internal val SEARCH_URL: String
+object ComciganAPI {
+    @JvmStatic
+    private val ROOT_URL = "http://comci.kr:4082"
+    @JvmStatic
+    internal val CHARSET = "EUC-KR"
 
-        init {
-            val root = "http://comci.kr:4082"
-            val script = requireNotNull(ComciganRegex.SCRIPT_REGEX.search(("$root/st").open()))
-            ROUTE = requireNotNull(ComciganRegex.ROUTE_REGEX.search(script))
-            PREFIX = requireNotNull(ComciganRegex.PREFIX_REGEX.search(script))
-            ORIGINAL_ID = requireNotNull(ComciganRegex.ORIGINAL_ID_REGEX.search(script))
-            DAILY_ID = requireNotNull(ComciganRegex.DAILY_ID_REGEX.search(script))
-            TEACHER_ID = requireNotNull(ComciganRegex.TEACHER_ID_REGEX.search(script))
-            SUBJECT_ID = requireNotNull(ComciganRegex.SUBJECT_ID_REGEX.search(script))
-            BASE_URL = "$root${ROUTE.substring(1..8)}"
-            SEARCH_URL = "$BASE_URL${ROUTE.substring(8)}"
-        }
+    @JvmStatic
+    private val SCRIPT: String
+    @JvmStatic
+    private val ROUTE: String
+    @JvmStatic
+    internal val PREFIX: String
+    @JvmStatic
+    private val ORIGINAL_ID: String
+    @JvmStatic
+    internal val DAILY_ID: String
+    @JvmStatic
+    internal val TEACHER_ID: String
+    @JvmStatic
+    internal val SUBJECT_ID: String
+    @JvmStatic
+    internal val BASE_URL: String
+    @JvmStatic
+    internal val SEARCH_URL: String
 
-        internal val String.json: JsonElement
-            get() {
-                return requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
-                    isLenient = true
-                }))
-            }
+    init {
+        SCRIPT = ComciganRegex.SCRIPT_REGEX.search(("$ROOT_URL/st").open())
+        ROUTE = ComciganRegex.ROUTE_REGEX.search(SCRIPT)
+        PREFIX = ComciganRegex.PREFIX_REGEX.search(SCRIPT)
+        ORIGINAL_ID = ComciganRegex.ORIGINAL_ID_REGEX.search(SCRIPT)
+        DAILY_ID = ComciganRegex.DAILY_ID_REGEX.search(SCRIPT)
+        TEACHER_ID = ComciganRegex.TEACHER_ID_REGEX.search(SCRIPT)
+        SUBJECT_ID = ComciganRegex.SUBJECT_ID_REGEX.search(SCRIPT)
+        BASE_URL = "$ROOT_URL${ROUTE.substring(1..8)}"
+        SEARCH_URL = "$BASE_URL${ROUTE.substring(8)}"
+    }
 
-        private fun String.open(charset: Charset = Charset.forName(CHARSET)): String {
-            return URL(this).readText(charset)
-        }
+    internal fun String.open(charset: Charset = Charset.forName(CHARSET)): String {
+        return URL(this).readText(charset)
+    }
+
+    /**
+     * Returns the first matching group
+     *
+     * @param string the input for regex matching
+     * @return matched string. null when no matching group found.
+     */
+    @JvmStatic
+    private fun Pattern.search(string: String): String {
+        val matcher = matcher(string)
+
+        return if (matcher.find()) {
+            matcher.group()
+        } else throw NoSuchElementException("Regex not found")
     }
 
     /**

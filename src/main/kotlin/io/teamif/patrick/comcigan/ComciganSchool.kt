@@ -20,7 +20,11 @@
 
 package io.teamif.patrick.comcigan
 
-import io.teamif.patrick.comcigan.ComciganAPI.Companion.json
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
+import io.teamif.patrick.comcigan.ComciganAPI.open
+import java.io.StringReader
 import java.net.URLEncoder
 import java.util.Base64
 import kotlin.collections.ArrayList
@@ -68,21 +72,25 @@ class ComciganSchool internal constructor(name: String) {
                 val longSubjects = getAsJsonArray("긴${ComciganAPI.SUBJECT_ID}").mapNotNull { it.asString }
                 val teachers = getAsJsonArray(ComciganAPI.TEACHER_ID).mapNotNull { it.asString }
 
-                val grades = getAsJsonArray(ComciganAPI.DAILY_ID).mapNotNull { it.asJsonArray }.drop(1)
+                val grades = getAsJsonArray(ComciganAPI.DAILY_ID).mapNotNull { it.asJsonArray }.drop(1).filter { it.count() > 0 }
                 val gradeArray = ArrayList<SchoolData.SchoolGradeData>()
                 grades.forEach { grade ->
-                    val classrooms = grade.map { it.asJsonArray }.drop(1)
+                    val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
                     val classroomArray = ArrayList<SchoolData.SchoolClassroomData>()
                     classrooms.forEach { classroom ->
-                        val days = classroom.map { it.asJsonArray }.drop(1)
+                        val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
                         val dayArray = ArrayList<SchoolData.SchoolDayData>(days.count())
                         days.forEach { day ->
-                            val codes = day.map { it.asString }.filterNot { it == "0" }
+                            val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
                             val codeArray = ArrayList<SchoolData.SchoolPeriodData>(codes.count())
                             codes.forEach { code ->
-                                val subject = code.takeLast(2).toInt()
-                                val teacher = code.dropLast(2).toInt()
-                                codeArray.add(SchoolData.SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher]))
+                                if (code == "0") {
+                                    codeArray.add(SchoolData.SchoolPeriodData.NULL)
+                                } else {
+                                    val subject = code.takeLast(2).toInt()
+                                    val teacher = code.dropLast(2).toInt()
+                                    codeArray.add(SchoolData.SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher]))
+                                }
                             }
                             dayArray.add(SchoolData.SchoolDayData(codeArray))
                         }
@@ -100,5 +108,12 @@ class ComciganSchool internal constructor(name: String) {
         get() {
             return "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode("${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()).decodeToString()}"
                 .replace("=", "")
+        }
+
+    private val String.json: JsonElement
+        get() {
+            return requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
+                isLenient = true
+            }))
         }
 }

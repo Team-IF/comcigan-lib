@@ -31,18 +31,68 @@ class SchoolData private constructor() {
      * A raw school data.
      * Contains all information.
      */
-    class SchoolRawData(private val data: List<SchoolWeekData>) {
+    class SchoolRawData(private val data: List<SchoolWeekData>) : List<SchoolWeekData> {
         val THIS_WEEK = data[0]
         val NEXT_WEEK = data[1]
 
         fun week(number: Int): SchoolWeekData {
             if (number < 1) throw IllegalArgumentException("Week number cannot be less than 1 (This Week).")
-            if (number > 2) throw IllegalArgumentException("Week number cannot exceed 2 (Next Week).")
             return data[number - 1]
         }
 
-        override fun toString(): String {
-            return data.toString()
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolRawData) {
+                return false
+            }
+
+            return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
+
+        override val size: Int
+            get() = data.size
+
+        override fun contains(element: SchoolWeekData): Boolean {
+            return data.contains(element)
+        }
+
+        override fun containsAll(elements: Collection<SchoolWeekData>): Boolean {
+            return data.containsAll(elements)
+        }
+
+        override fun indexOf(element: SchoolWeekData): Int {
+            return data.indexOf(element)
+        }
+
+        override fun isEmpty(): Boolean {
+            return data.isEmpty()
+        }
+
+        override fun iterator(): Iterator<SchoolWeekData> {
+            return data.iterator()
+        }
+
+        override fun lastIndexOf(element: SchoolWeekData): Int {
+            return data.lastIndexOf(element)
+        }
+
+        override fun listIterator(): ListIterator<SchoolWeekData> {
+            return data.listIterator()
+        }
+
+        override fun listIterator(index: Int): ListIterator<SchoolWeekData> {
+            return data.listIterator(index)
+        }
+
+        override fun subList(fromIndex: Int, toIndex: Int): List<SchoolWeekData> {
+            return data.subList(fromIndex, toIndex)
+        }
+
+        override fun get(index: Int): SchoolWeekData {
+            return data[index]
         }
     }
 
@@ -50,15 +100,66 @@ class SchoolData private constructor() {
      * A school week data.
      * Contains all information in the week.
      */
-    class SchoolWeekData(private val data: List<SchoolGradeData>) {
+    class SchoolWeekData(private val data: List<SchoolGradeData>) : List<SchoolGradeData> {
         fun grade(number: Int): SchoolGradeData {
             if (number < 1) throw IllegalArgumentException("Grade number cannot be less than 1.")
             if (number > data.count()) throw IllegalArgumentException("Grade number cannot exceed total.")
             return data[number - 1]
         }
 
-        override fun toString(): String {
-            return data.toString()
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolWeekData) {
+                return false
+            }
+
+            return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
+
+        override val size: Int
+            get() = data.size
+
+        override fun contains(element: SchoolGradeData): Boolean {
+            return data.contains(element)
+        }
+
+        override fun containsAll(elements: Collection<SchoolGradeData>): Boolean {
+            return data.containsAll(elements)
+        }
+
+        override fun indexOf(element: SchoolGradeData): Int {
+            return data.indexOf(element)
+        }
+
+        override fun isEmpty(): Boolean {
+            return data.isEmpty()
+        }
+
+        override fun iterator(): Iterator<SchoolGradeData> {
+            return data.iterator()
+        }
+
+        override fun lastIndexOf(element: SchoolGradeData): Int {
+            return data.lastIndexOf(element)
+        }
+
+        override fun listIterator(): ListIterator<SchoolGradeData> {
+            return data.listIterator()
+        }
+
+        override fun listIterator(index: Int): ListIterator<SchoolGradeData> {
+            return data.listIterator(index)
+        }
+
+        override fun subList(fromIndex: Int, toIndex: Int): List<SchoolGradeData> {
+            return data.subList(fromIndex, toIndex)
+        }
+
+        override fun get(index: Int): SchoolGradeData {
+            return data[index]
         }
     }
 
@@ -66,15 +167,66 @@ class SchoolData private constructor() {
      * A school grade data.
      * Contains all information in the week for this grade.
      */
-    class SchoolGradeData(private val data: List<SchoolClassroomData>) {
+    class SchoolGradeData(private val data: List<SchoolClassroomData>) : List<SchoolClassroomData> {
         fun classroom(number: Int): SchoolClassroomData {
             if (number < 1) throw IllegalArgumentException("Classroom number cannot be less than 1.")
             if (number > data.count()) throw IllegalArgumentException("Classroom number cannot exceed total.")
             return data[number - 1]
         }
 
-        override fun toString(): String {
-            return data.toString()
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolGradeData) {
+                return false
+            }
+
+            return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
+
+        override val size: Int
+            get() = data.size
+
+        override fun contains(element: SchoolClassroomData): Boolean {
+            return data.contains(element)
+        }
+
+        override fun containsAll(elements: Collection<SchoolClassroomData>): Boolean {
+            return data.containsAll(elements)
+        }
+
+        override fun indexOf(element: SchoolClassroomData): Int {
+            return data.indexOf(element)
+        }
+
+        override fun isEmpty(): Boolean {
+            return data.isEmpty()
+        }
+
+        override fun iterator(): Iterator<SchoolClassroomData> {
+            return data.iterator()
+        }
+
+        override fun lastIndexOf(element: SchoolClassroomData): Int {
+            return data.lastIndexOf(element)
+        }
+
+        override fun listIterator(): ListIterator<SchoolClassroomData> {
+            return data.listIterator()
+        }
+
+        override fun listIterator(index: Int): ListIterator<SchoolClassroomData> {
+            return data.listIterator(index)
+        }
+
+        override fun subList(fromIndex: Int, toIndex: Int): List<SchoolClassroomData> {
+            return data.subList(fromIndex, toIndex)
+        }
+
+        override fun get(index: Int): SchoolClassroomData {
+            return data[index]
         }
     }
 
@@ -82,7 +234,7 @@ class SchoolData private constructor() {
      * A school classroom data.
      * Contains all information in the week for this classroom.
      */
-    class SchoolClassroomData(private val data: List<SchoolDayData>) {
+    class SchoolClassroomData(private val data: List<SchoolDayData>) : List<SchoolDayData> {
         val MONDAY = data[0]
         val TUESDAY = data[1]
         val WEDNESDAY = data[2]
@@ -96,8 +248,59 @@ class SchoolData private constructor() {
             return data[number - 1]
         }
 
-        override fun toString(): String {
-            return data.toString()
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolClassroomData) {
+                return false
+            }
+
+            return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
+
+        override val size: Int
+            get() = data.size
+
+        override fun contains(element: SchoolDayData): Boolean {
+            return data.contains(element)
+        }
+
+        override fun containsAll(elements: Collection<SchoolDayData>): Boolean {
+            return data.containsAll(elements)
+        }
+
+        override fun indexOf(element: SchoolDayData): Int {
+            return data.indexOf(element)
+        }
+
+        override fun isEmpty(): Boolean {
+            return data.isEmpty()
+        }
+
+        override fun iterator(): Iterator<SchoolDayData> {
+            return data.iterator()
+        }
+
+        override fun lastIndexOf(element: SchoolDayData): Int {
+            return data.lastIndexOf(element)
+        }
+
+        override fun listIterator(): ListIterator<SchoolDayData> {
+            return data.listIterator()
+        }
+
+        override fun listIterator(index: Int): ListIterator<SchoolDayData> {
+            return data.listIterator(index)
+        }
+
+        override fun subList(fromIndex: Int, toIndex: Int): List<SchoolDayData> {
+            return data.subList(fromIndex, toIndex)
+        }
+
+        override fun get(index: Int): SchoolDayData {
+            return data[index]
         }
     }
 
@@ -105,15 +308,66 @@ class SchoolData private constructor() {
      * A school day data.
      * Contains all information in this day for the classroom.
      */
-    class SchoolDayData(private val data: List<SchoolPeriodData>) {
+    class SchoolDayData(private val data: List<SchoolPeriodData>) : List<SchoolPeriodData> {
         fun period(number: Int): SchoolPeriodData {
             if (number < 1) throw IllegalArgumentException("Period number cannot be less than 1.")
             if (number > data.count()) throw IllegalArgumentException("Period number cannot exceed total.")
             return data[number - 1]
         }
 
-        override fun toString(): String {
-            return data.toString()
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolDayData) {
+                return false
+            }
+
+            return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        }
+
+        override fun hashCode(): Int {
+            return data.hashCode()
+        }
+
+        override val size: Int
+            get() = data.size
+
+        override fun contains(element: SchoolPeriodData): Boolean {
+            return data.contains(element)
+        }
+
+        override fun containsAll(elements: Collection<SchoolPeriodData>): Boolean {
+            return data.containsAll(elements)
+        }
+
+        override fun indexOf(element: SchoolPeriodData): Int {
+            return data.indexOf(element)
+        }
+
+        override fun isEmpty(): Boolean {
+            return data.isEmpty()
+        }
+
+        override fun iterator(): Iterator<SchoolPeriodData> {
+            return data.iterator()
+        }
+
+        override fun lastIndexOf(element: SchoolPeriodData): Int {
+            return data.lastIndexOf(element)
+        }
+
+        override fun listIterator(): ListIterator<SchoolPeriodData> {
+            return data.listIterator()
+        }
+
+        override fun listIterator(index: Int): ListIterator<SchoolPeriodData> {
+            return data.listIterator(index)
+        }
+
+        override fun subList(fromIndex: Int, toIndex: Int): List<SchoolPeriodData> {
+            return data.subList(fromIndex, toIndex)
+        }
+
+        override fun get(index: Int): SchoolPeriodData {
+            return data[index]
         }
     }
 
@@ -122,8 +376,27 @@ class SchoolData private constructor() {
      * Contains all information in this period for the classroom.
      */
     class SchoolPeriodData(val SUBJECT: String, val FULL_SUBJECT: String, val TEACHER: String) {
+        internal companion object {
+            internal val NULL = SchoolPeriodData("", "", "")
+        }
+
         override fun toString(): String {
             return "{\"SUBJECT\": \"$SUBJECT\", \"FULL_SUBJECT\": \"$FULL_SUBJECT\", \"TEACHER\": \"$TEACHER\"}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is SchoolPeriodData) {
+                return false
+            }
+
+            return SUBJECT == other.SUBJECT && FULL_SUBJECT == other.FULL_SUBJECT && TEACHER == other.TEACHER
+        }
+
+        override fun hashCode(): Int {
+            var result = SUBJECT.hashCode()
+            result = 31 * result + FULL_SUBJECT.hashCode()
+            result = 31 * result + TEACHER.hashCode()
+            return result
         }
     }
 }
