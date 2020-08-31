@@ -33,7 +33,7 @@ plugins {
 }
 
 group = "io.teamif"
-version = "1.1"
+version = "1.1.1"
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
@@ -63,7 +63,7 @@ tasks {
     }
 
     withType<ShadowJar> {
-        archiveClassifier.set("")
+        archiveClassifier.set("assembly")
     }
 
     create<Jar>("sourcesJar") {
@@ -72,14 +72,16 @@ tasks {
     }
 
     create<Jar>("dokkaJar") {
+        archiveClassifier.set("javadoc")
         dependsOn("dokkaHtml")
+
         from("$buildDir/dokka/html/") {
             include("**")
         }
+
         from("$rootDir/src/main/resources/") {
             include("**")
         }
-        archiveClassifier.set("javadoc")
     }
 }
 
@@ -87,6 +89,7 @@ try {
     publishing {
         publications {
             create<MavenPublication>("comciganLib") {
+                artifact(tasks["jar"])
                 artifact(tasks["sourcesJar"])
                 artifact(tasks["dokkaJar"])
                 artifact(tasks["shadowJar"])
