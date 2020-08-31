@@ -33,7 +33,7 @@ plugins {
 }
 
 group = "io.teamif"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
@@ -41,7 +41,7 @@ repositories {
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.google.code.gson:gson:latest.release")
     testImplementation(kotlin("test-junit"))
 }
 
@@ -89,10 +89,9 @@ try {
     publishing {
         publications {
             create<MavenPublication>("comciganLib") {
-                artifact(tasks["jar"])
+                from(components["java"])
                 artifact(tasks["sourcesJar"])
                 artifact(tasks["dokkaJar"])
-                artifact(tasks["shadowJar"])
 
                 repositories {
                     mavenLocal()
