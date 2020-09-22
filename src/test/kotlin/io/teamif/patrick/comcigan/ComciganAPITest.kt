@@ -36,6 +36,9 @@ class ComciganAPITest {
             println(schoolData.toString())
             assertEquals(schoolName, "유성중학교")
             assertEquals(schoolCode, "65543")
+//          Sample Usage:
+//            println(schoolData.THIS_WEEK.grade(1).classroom(1).MONDAY.period(1).fullSubject)
+//            println(schoolData[0][0][0][0][0].fullSubject)
             refresh()
         }
     }

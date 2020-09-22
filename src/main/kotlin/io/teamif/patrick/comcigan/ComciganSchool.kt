@@ -39,12 +39,11 @@ import kotlin.collections.ArrayList
  *
  * @author PatrickKR
  */
-@Suppress("MemberVisibilityCanBePrivate")
 class ComciganSchool internal constructor(name: String) {
     val schoolName: String
     val schoolCode: String
     private val schoolUrls: List<String>
-    lateinit var schoolData: SchoolData.SchoolRawData
+    lateinit var schoolData: SchoolRawData
         private set
     init {
         val json = "${ComciganAPI.SEARCH_URL}${URLEncoder.encode(name, ComciganAPI.CHARSET)}".json.asJsonObject.getAsJsonArray("학교검색")
@@ -65,7 +64,7 @@ class ComciganSchool internal constructor(name: String) {
      * Refreshes the data by parsing the Comcigan Website
      */
     fun refresh() {
-        val weekArray = ArrayList<SchoolData.SchoolWeekData>()
+        val weekArray = ArrayList<SchoolWeekData>()
         schoolUrls.forEach { url ->
             url.json.asJsonObject.run {
                 val shortSubjects = getAsJsonArray(ComciganAPI.SUBJECT_ID).mapNotNull { it.asString }
@@ -73,35 +72,35 @@ class ComciganSchool internal constructor(name: String) {
                 val teachers = getAsJsonArray(ComciganAPI.TEACHER_ID).mapNotNull { it.asString }
 
                 val grades = getAsJsonArray(ComciganAPI.DAILY_ID).mapNotNull { it.asJsonArray }.drop(1).filter { it.count() > 0 }
-                val gradeArray = ArrayList<SchoolData.SchoolGradeData>()
+                val gradeArray = ArrayList<SchoolGradeData>()
                 grades.forEach { grade ->
                     val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
-                    val classroomArray = ArrayList<SchoolData.SchoolClassroomData>()
+                    val classroomArray = ArrayList<SchoolClassroomData>()
                     classrooms.forEach { classroom ->
                         val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
-                        val dayArray = ArrayList<SchoolData.SchoolDayData>(days.count())
+                        val dayArray = ArrayList<SchoolDayData>(days.count())
                         days.forEach { day ->
                             val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
-                            val codeArray = ArrayList<SchoolData.SchoolPeriodData>(codes.count())
+                            val codeArray = ArrayList<SchoolPeriodData>(codes.count())
                             codes.forEach { code ->
                                 if (code == "0") {
-                                    codeArray.add(SchoolData.SchoolPeriodData.NULL)
+                                    codeArray.add(SchoolPeriodData.NULL)
                                 } else {
                                     val subject = code.takeLast(2).toInt()
                                     val teacher = code.dropLast(2).toInt()
-                                    codeArray.add(SchoolData.SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher]))
+                                    codeArray.add(SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher]))
                                 }
                             }
-                            dayArray.add(SchoolData.SchoolDayData(codeArray))
+                            dayArray.add(SchoolDayData(codeArray))
                         }
-                        classroomArray.add(SchoolData.SchoolClassroomData(dayArray))
+                        classroomArray.add(SchoolClassroomData(dayArray))
                     }
-                    gradeArray.add(SchoolData.SchoolGradeData(classroomArray))
+                    gradeArray.add(SchoolGradeData(classroomArray))
                 }
-                weekArray.add(SchoolData.SchoolWeekData(gradeArray))
+                weekArray.add(SchoolWeekData(gradeArray))
             }
         }
-        schoolData = SchoolData.SchoolRawData(weekArray)
+        schoolData = SchoolRawData(weekArray)
     }
 
     private val Int.schoolUrl: String

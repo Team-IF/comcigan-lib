@@ -24,16 +24,18 @@ import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+import java.net.URL
+
 plugins {
     `maven-publish`
     signing
-    kotlin("jvm") version "1.4.0"
-    id("org.jetbrains.dokka") version "1.4.0-rc"
+    kotlin("jvm") version "1.4.10"
+    id("org.jetbrains.dokka") version "1.4.10"
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 group = "io.teamif"
-version = "1.1.2"
+version = "1.2.0"
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")
@@ -41,7 +43,7 @@ repositories {
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.google.code.gson:gson:latest.release")
+    implementation("com.google.code.gson:gson:2.8.6")
     testImplementation(kotlin("test-junit"))
 }
 
@@ -52,11 +54,12 @@ tasks {
 
     withType<DokkaTask> {
         dokkaSourceSets {
-            register("main") {
+            named("main") {
+                displayName.set("Comcigan Library (JVM)")
                 sourceLink {
-                    path = "src/main/kotlin"
-                    url = "https://github.com/Team-IF/comcigan-lib/tree/master/src/main/kotlin"
-                    lineSuffix = "#L"
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(URL("https://github.com/Team-IF/comcigan-lib/tree/master/src/main/kotlin"))
+                    remoteLineSuffix.set("#L")
                 }
             }
         }

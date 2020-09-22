@@ -1,4 +1,8 @@
-# Comcigan Library (written in Kotlin)
+# Comcigan Library (JVM)
+
+Comcigan Library written in Kotlin (JVM)
+
+[Javadoc.io](https://www.javadoc.io/doc/io.teamif/comcigan-lib/latest/index.html) to see Javadoc online!
 
 ## Repositories
 
@@ -14,7 +18,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'io.teamif:comcigan-lib:1.1.2'
+    implementation 'io.teamif:comcigan-lib:1.2.0'
 }
 ```
 
@@ -30,7 +34,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-    implementation("io.teamif:comcigan-lib:1.1.2")
+    implementation("io.teamif:comcigan-lib:1.2.0")
 }
 ```
 

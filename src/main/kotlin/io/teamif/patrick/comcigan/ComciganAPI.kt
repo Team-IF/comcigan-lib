@@ -56,13 +56,13 @@ object ComciganAPI {
     internal val SEARCH_URL: String
 
     init {
-        SCRIPT = ComciganRegex.SCRIPT_REGEX.search(("$ROOT_URL/st").open())
-        ROUTE = ComciganRegex.ROUTE_REGEX.search(SCRIPT)
-        PREFIX = ComciganRegex.PREFIX_REGEX.search(SCRIPT)
-        ORIGINAL_ID = ComciganRegex.ORIGINAL_ID_REGEX.search(SCRIPT)
-        DAILY_ID = ComciganRegex.DAILY_ID_REGEX.search(SCRIPT)
-        TEACHER_ID = ComciganRegex.TEACHER_ID_REGEX.search(SCRIPT)
-        SUBJECT_ID = ComciganRegex.SUBJECT_ID_REGEX.search(SCRIPT)
+        SCRIPT = SCRIPT_REGEX.search(("$ROOT_URL/st").open())
+        ROUTE = ROUTE_REGEX.search(SCRIPT)
+        PREFIX = PREFIX_REGEX.search(SCRIPT)
+        ORIGINAL_ID = ORIGINAL_ID_REGEX.search(SCRIPT)
+        DAILY_ID = DAILY_ID_REGEX.search(SCRIPT)
+        TEACHER_ID = TEACHER_ID_REGEX.search(SCRIPT)
+        SUBJECT_ID = SUBJECT_ID_REGEX.search(SCRIPT)
         BASE_URL = "$ROOT_URL${ROUTE.substring(1..8)}"
         SEARCH_URL = "$BASE_URL${ROUTE.substring(8)}"
     }

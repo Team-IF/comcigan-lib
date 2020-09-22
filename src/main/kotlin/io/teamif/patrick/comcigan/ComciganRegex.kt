@@ -20,8 +20,6 @@
 
 package io.teamif.patrick.comcigan
 
-import java.util.regex.Pattern
-
 /**
  * Regex handler for Comcigan API.
  * Provides regex used for api, and some functions
@@ -29,19 +27,17 @@ import java.util.regex.Pattern
  *
  * @author PatrickKR
  */
-object ComciganRegex {
-    @JvmStatic
-    val SCRIPT_REGEX = "(?<=<script language='JavaScript' type='text\\/JavaScript'>).*?(?=<\\/script>)".toPattern(8)
-    @JvmStatic
-    val ROUTE_REGEX = "\\./\\d{6}\\?\\d{5}l".toPattern()
-    @JvmStatic
-    val PREFIX_REGEX = "(?<=')\\d+_(?=)(?=')".toPattern()
-    @JvmStatic
-    val ORIGINAL_ID_REGEX = "(?<=원자료=자료\\.)자료\\d+".toPattern()
-    @JvmStatic
-    val DAILY_ID_REGEX = "(?<=일일자료=자료\\.)자료\\d+".toPattern()
-    @JvmStatic
-    val TEACHER_ID_REGEX = "(?<=성명=자료\\.)자료\\d+".toPattern()
-    @JvmStatic
-    val SUBJECT_ID_REGEX = "(?<=자료\\.)자료\\d+(?=\\[sb])".toPattern()
-}
+
+internal val SCRIPT_REGEX = "(?<=<script language='JavaScript' type='text\\/JavaScript'>).*?(?=<\\/script>)".toPattern(8)
+
+internal val ROUTE_REGEX = "\\./\\d{6}\\?\\d{5}l".toPattern()
+
+internal val PREFIX_REGEX = "(?<=')\\d+_(?=)(?=')".toPattern()
+
+internal val ORIGINAL_ID_REGEX = "(?<=원자료=자료\\.)자료\\d+".toPattern()
+
+internal val DAILY_ID_REGEX = "(?<=일일자료=자료\\.)자료\\d+".toPattern()
+
+internal val TEACHER_ID_REGEX = "(?<=성명=자료\\.)자료\\d+".toPattern()
+
+internal val SUBJECT_ID_REGEX = "(?<=자료\\.)자료\\d+(?=\\[sb])".toPattern()
