@@ -92,9 +92,14 @@ class SchoolClassroomData internal constructor(private val data: List<SchoolDayD
     val FRIDAY = data[4]
     val SATURDAY = data[5]
 
-    fun day(number: Int): SchoolDayData = when (number) {
-        in 1..6 -> data[number - 1]
-        else -> throw IllegalArgumentException("Day number cannot be less than 1 (Monday) or exceed 6 (Saturday).")
+    fun day(number: Int): SchoolDayData {
+        val weekStart = 1
+        val weekEnd = 6
+
+        return when (number) {
+            in weekStart..weekEnd -> data[number - 1]
+            else -> throw IllegalArgumentException("Day number cannot be less than 1 (Monday) or exceed 6 (Saturday).")
+        }
     }
 
     override fun equals(other: Any?): Boolean = when (other) {

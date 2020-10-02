@@ -101,7 +101,11 @@ class ComciganSchool internal constructor(name: String) {
                                                 val subject = code.takeLast(2).toInt()
                                                 val teacher = code.dropLast(2).toInt()
 
-                                                SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher])
+                                                SchoolPeriodData(
+                                                        shortSubjects[subject],
+                                                        longSubjects[subject],
+                                                        teachers[teacher]
+                                                )
                                             }
                                         }
                                     })
@@ -116,8 +120,12 @@ class ComciganSchool internal constructor(name: String) {
     }
 
     private val Int.schoolUrl: String
-        get() = "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode("${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()).decodeToString()}"
-                .replace("=", "")
+        get() {
+            val byteArray = "${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()
+
+            return "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode(byteArray).decodeToString()}"
+                    .run { replace("=", "") }
+        }
 
     private val String.json: JsonElement
         get() = requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
