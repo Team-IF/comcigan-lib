@@ -26,15 +26,7 @@ import com.google.gson.stream.JsonReader
 import io.teamif.patrick.comcigan.ComciganAPI.open
 import java.io.StringReader
 import java.net.URLEncoder
-import java.util.*
-import kotlin.IllegalArgumentException
-import kotlin.Int
-import kotlin.NoSuchElementException
-import kotlin.String
-import kotlin.apply
-import kotlin.collections.ArrayList
-import kotlin.requireNotNull
-import kotlin.run
+import java.util.Base64
 
 /**
  * A class representing comcigan school

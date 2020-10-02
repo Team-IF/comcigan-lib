@@ -23,7 +23,6 @@ package io.teamif.patrick.comcigan
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.regex.Pattern
-import kotlin.jvm.Throws
 
 /**
  * A Comcigan API wrapper written in Kotlin
