@@ -26,8 +26,15 @@ import com.google.gson.stream.JsonReader
 import io.teamif.patrick.comcigan.ComciganAPI.open
 import java.io.StringReader
 import java.net.URLEncoder
-import java.util.Base64
+import java.util.*
+import kotlin.IllegalArgumentException
+import kotlin.Int
+import kotlin.NoSuchElementException
+import kotlin.String
+import kotlin.apply
 import kotlin.collections.ArrayList
+import kotlin.requireNotNull
+import kotlin.run
 
 /**
  * A class representing comcigan school
@@ -45,8 +52,11 @@ class ComciganSchool internal constructor(name: String) {
     private val schoolUrls: List<String>
     lateinit var schoolData: SchoolRawData
         private set
+
     init {
-        val json = "${ComciganAPI.SEARCH_URL}${URLEncoder.encode(name, ComciganAPI.CHARSET)}".json.asJsonObject.getAsJsonArray("학교검색")
+        val json = "${ComciganAPI.SEARCH_URL}${URLEncoder.encode(name, ComciganAPI.CHARSET)}"
+                .json.asJsonObject.getAsJsonArray("학교검색")
+
         when (json.count()) {
             0 -> throw NoSuchElementException("No schools have been searched by the name passed.")
             1 -> json.first().asJsonArray
@@ -65,54 +75,52 @@ class ComciganSchool internal constructor(name: String) {
      */
     fun refresh() {
         val weekArray = ArrayList<SchoolWeekData>()
-        schoolUrls.forEach { url ->
+
+        schoolUrls.map { url ->
             url.json.asJsonObject.run {
                 val shortSubjects = getAsJsonArray(ComciganAPI.SUBJECT_ID).mapNotNull { it.asString }
                 val longSubjects = getAsJsonArray("긴${ComciganAPI.SUBJECT_ID}").mapNotNull { it.asString }
                 val teachers = getAsJsonArray(ComciganAPI.TEACHER_ID).mapNotNull { it.asString }
 
                 val grades = getAsJsonArray(ComciganAPI.DAILY_ID).mapNotNull { it.asJsonArray }.drop(1).filter { it.count() > 0 }
-                val gradeArray = ArrayList<SchoolGradeData>()
-                grades.forEach { grade ->
-                    val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
-                    val classroomArray = ArrayList<SchoolClassroomData>()
-                    classrooms.forEach { classroom ->
-                        val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
-                        val dayArray = ArrayList<SchoolDayData>(days.count())
-                        days.forEach { day ->
-                            val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
-                            val codeArray = ArrayList<SchoolPeriodData>(codes.count())
-                            codes.forEach { code ->
-                                if (code == "0") {
-                                    codeArray.add(SchoolPeriodData.NULL)
-                                } else {
-                                    val subject = code.takeLast(2).toInt()
-                                    val teacher = code.dropLast(2).toInt()
-                                    codeArray.add(SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher]))
-                                }
-                            }
-                            dayArray.add(SchoolDayData(codeArray))
-                        }
-                        classroomArray.add(SchoolClassroomData(dayArray))
-                    }
-                    gradeArray.add(SchoolGradeData(classroomArray))
-                }
-                weekArray.add(SchoolWeekData(gradeArray))
+
+                weekArray.add(
+                        SchoolWeekData(grades.map { grade ->
+                            val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
+
+                            SchoolGradeData(classrooms.map { classroom ->
+                                val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
+
+                                SchoolClassroomData(days.map { day ->
+                                    val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
+
+                                    SchoolDayData(codes.map { code ->
+                                        when (code) {
+                                            "0" -> SchoolPeriodData.NULL
+                                            else -> {
+                                                val subject = code.takeLast(2).toInt()
+                                                val teacher = code.dropLast(2).toInt()
+
+                                                SchoolPeriodData(shortSubjects[subject], longSubjects[subject], teachers[teacher])
+                                            }
+                                        }
+                                    })
+                                })
+                            })
+                        })
+                )
             }
         }
+
         schoolData = SchoolRawData(weekArray)
     }
 
     private val Int.schoolUrl: String
-        get() {
-            return "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode("${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()).decodeToString()}"
+        get() = "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode("${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()).decodeToString()}"
                 .replace("=", "")
-        }
 
     private val String.json: JsonElement
-        get() {
-            return requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
-                isLenient = true
-            }))
-        }
+        get() = requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
+            isLenient = true
+        }))
 }
