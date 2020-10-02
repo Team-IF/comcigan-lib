@@ -23,7 +23,6 @@ package io.teamif.patrick.comcigan
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.regex.Pattern
-import kotlin.jvm.Throws
 
 /**
  * A Comcigan API wrapper written in Kotlin
@@ -33,25 +32,34 @@ import kotlin.jvm.Throws
 object ComciganAPI {
     @JvmStatic
     private val ROOT_URL = "http://comci.kr:4082"
+
     @JvmStatic
     internal val CHARSET = "EUC-KR"
 
     @JvmStatic
     private val SCRIPT: String
+
     @JvmStatic
     private val ROUTE: String
+
     @JvmStatic
     internal val PREFIX: String
+
     @JvmStatic
     private val ORIGINAL_ID: String
+
     @JvmStatic
     internal val DAILY_ID: String
+
     @JvmStatic
     internal val TEACHER_ID: String
+
     @JvmStatic
     internal val SUBJECT_ID: String
+
     @JvmStatic
     internal val BASE_URL: String
+
     @JvmStatic
     internal val SEARCH_URL: String
 
@@ -67,9 +75,8 @@ object ComciganAPI {
         SEARCH_URL = "$BASE_URL${ROUTE.substring(8)}"
     }
 
-    internal fun String.open(charset: Charset = Charset.forName(CHARSET)): String {
-        return URL(this).readText(charset)
-    }
+    internal fun String.open(charset: Charset = Charset.forName(CHARSET)): String =
+            URL(this).readText(charset)
 
     /**
      * Returns the first matching group
@@ -78,13 +85,14 @@ object ComciganAPI {
      * @return matched string. null when no matching group found.
      */
     @JvmStatic
-    private fun Pattern.search(string: String): String {
-        val matcher = matcher(string)
+    private fun Pattern.search(string: String): String =
+            with(matcher(string)) {
+                when {
+                    find() -> group()
+                    else -> throw NoSuchElementException("Regex not found")
+                }
+            }
 
-        return if (matcher.find()) {
-            matcher.group()
-        } else throw NoSuchElementException("Regex not found")
-    }
 
     /**
      * Creates a new ComciganSchool element by searching a keyword
@@ -95,7 +103,5 @@ object ComciganAPI {
      * @see [ComciganSchool]
      */
     @Throws(NoSuchElementException::class, IllegalArgumentException::class)
-    fun newSchool(name: String): ComciganSchool {
-        return ComciganSchool(name)
-    }
+    fun newSchool(name: String): ComciganSchool = ComciganSchool(name)
 }

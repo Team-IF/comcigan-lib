@@ -18,12 +18,11 @@
  * Contact me on <mailpatrickkr@gmail.com>
  */
 
-import groovy.lang.MissingPropertyException
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import groovy.lang.MissingPropertyException
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 import java.net.URL
 
 plugins {
@@ -153,4 +152,6 @@ try {
         sign(tasks["sourcesJar"], tasks["dokkaJar"], tasks["shadowJar"])
         sign(publishing.publications["comciganLib"])
     }
-} catch (ignored: MissingPropertyException) {}
+} catch (ignored: MissingPropertyException) {
+    // ignored exception
+}

@@ -35,17 +35,12 @@ class SchoolRawData internal constructor(private val data: List<SchoolWeekData>)
         return data[number - 1]
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolRawData) {
-            return false
-        }
-
-        return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+    override fun equals(other: Any?): Boolean = when (other) {
+        !is SchoolRawData -> false
+        else -> data.toTypedArray() contentDeepEquals other.data.toTypedArray()
     }
 
-    override fun hashCode(): Int {
-        return data.hashCode()
-    }
+    override fun hashCode(): Int = data.hashCode()
 }
 
 /**
@@ -59,17 +54,12 @@ class SchoolWeekData internal constructor(private val data: List<SchoolGradeData
         return data[number - 1]
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolWeekData) {
-            return false
-        }
-
-        return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+    override fun equals(other: Any?): Boolean = when (other) {
+        !is SchoolWeekData -> false
+        else -> data.toTypedArray() contentDeepEquals other.data.toTypedArray()
     }
 
-    override fun hashCode(): Int {
-        return data.hashCode()
-    }
+    override fun hashCode(): Int = data.hashCode()
 }
 
 /**
@@ -77,23 +67,17 @@ class SchoolWeekData internal constructor(private val data: List<SchoolGradeData
  * Contains all information in the week for this grade.
  */
 class SchoolGradeData internal constructor(private val data: List<SchoolClassroomData>) : ListableData<SchoolClassroomData>(data) {
-    fun classroom(number: Int): SchoolClassroomData {
-        if (number < 1) throw IllegalArgumentException("Classroom number cannot be less than 1.")
-        if (number > data.count()) throw IllegalArgumentException("Classroom number cannot exceed total.")
-        return data[number - 1]
+    fun classroom(number: Int): SchoolClassroomData = when (number) {
+        in 1..data.count() -> data[number - 1]
+        else -> throw IllegalArgumentException("Classroom number cannot be less than 1 or exceed total.")
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolGradeData) {
-            return false
-        }
-
-        return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+    override fun equals(other: Any?): Boolean = when (other) {
+        is SchoolGradeData -> data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        else -> false
     }
 
-    override fun hashCode(): Int {
-        return data.hashCode()
-    }
+    override fun hashCode(): Int = data.hashCode()
 }
 
 /**
@@ -109,22 +93,21 @@ class SchoolClassroomData internal constructor(private val data: List<SchoolDayD
     val SATURDAY = data[5]
 
     fun day(number: Int): SchoolDayData {
-        if (number < 1) throw IllegalArgumentException("Day number cannot be less than 1 (Monday).")
-        if (number > 6) throw IllegalArgumentException("Day number cannot exceed 6 (Saturday).")
-        return data[number - 1]
-    }
+        val weekStart = 1
+        val weekEnd = 6
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolClassroomData) {
-            return false
+        return when (number) {
+            in weekStart..weekEnd -> data[number - 1]
+            else -> throw IllegalArgumentException("Day number cannot be less than 1 (Monday) or exceed 6 (Saturday).")
         }
-
-        return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
     }
 
-    override fun hashCode(): Int {
-        return data.hashCode()
+    override fun equals(other: Any?): Boolean = when (other) {
+        is SchoolClassroomData -> data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        else -> false
     }
+
+    override fun hashCode(): Int = data.hashCode()
 }
 
 /**
@@ -132,23 +115,17 @@ class SchoolClassroomData internal constructor(private val data: List<SchoolDayD
  * Contains all information in this day for the classroom.
  */
 class SchoolDayData internal constructor(private val data: List<SchoolPeriodData>) : ListableData<SchoolPeriodData>(data) {
-    fun period(number: Int): SchoolPeriodData {
-        if (number < 1) throw IllegalArgumentException("Period number cannot be less than 1.")
-        if (number > data.count()) throw IllegalArgumentException("Period number cannot exceed total.")
-        return data[number - 1]
+    fun period(number: Int): SchoolPeriodData = when (number) {
+        in 1..data.count() -> data[number - 1]
+        else -> throw IllegalArgumentException("Period number cannot be less than 1 or exceed total..")
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolDayData) {
-            return false
-        }
-
-        return data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+    override fun equals(other: Any?): Boolean = when (other) {
+        is SchoolDayData -> data.toTypedArray() contentDeepEquals other.data.toTypedArray()
+        else -> false
     }
 
-    override fun hashCode(): Int {
-        return data.hashCode()
-    }
+    override fun hashCode(): Int = data.hashCode()
 }
 
 /**
@@ -164,67 +141,38 @@ class SchoolPeriodData internal constructor(val subject: String, val fullSubject
         internal val NULL = SchoolPeriodData("", "", "")
     }
 
-    override fun toString(): String {
-        return "{\"SUBJECT\": \"$subject\", \"FULL_SUBJECT\": \"$fullSubject\", \"TEACHER\": \"$teacher\"}"
+    override fun toString(): String =
+            "{\"SUBJECT\": \"$subject\", \"FULL_SUBJECT\": \"$fullSubject\", \"TEACHER\": \"$teacher\"}"
+
+    override fun equals(other: Any?): Boolean = when (other) {
+        is SchoolPeriodData -> subject == other.subject && fullSubject == other.fullSubject && teacher == other.teacher
+        else -> false
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is SchoolPeriodData) {
-            return false
-        }
-
-        return subject == other.subject && fullSubject == other.fullSubject && teacher == other.teacher
-    }
-
-    override fun hashCode(): Int {
-        var result = subject.hashCode()
-        result = 31 * result + fullSubject.hashCode()
-        result = 31 * result + teacher.hashCode()
-        return result
-    }
+    override fun hashCode(): Int = subject.hashCode() * 31 * 31 + fullSubject.hashCode() * 31 + teacher.hashCode()
 }
 
 open class ListableData<T> internal constructor(private val data: List<T>) : List<T> {
     override val size: Int
         get() = data.size
 
-    override fun contains(element: T): Boolean {
-        return data.contains(element)
-    }
+    override fun contains(element: T): Boolean = data.contains(element)
 
-    override fun containsAll(elements: Collection<T>): Boolean {
-        return data.containsAll(elements)
-    }
+    override fun containsAll(elements: Collection<T>): Boolean = data.containsAll(elements)
 
-    override fun indexOf(element: T): Int {
-        return data.indexOf(element)
-    }
+    override fun indexOf(element: T): Int = data.indexOf(element)
 
-    override fun isEmpty(): Boolean {
-        return data.isEmpty()
-    }
+    override fun isEmpty(): Boolean = data.isEmpty()
 
-    override fun iterator(): Iterator<T> {
-        return data.iterator()
-    }
+    override fun iterator(): Iterator<T> = data.iterator()
 
-    override fun lastIndexOf(element: T): Int {
-        return data.lastIndexOf(element)
-    }
+    override fun lastIndexOf(element: T): Int = data.lastIndexOf(element)
 
-    override fun listIterator(): ListIterator<T> {
-        return data.listIterator()
-    }
+    override fun listIterator(): ListIterator<T> = data.listIterator()
 
-    override fun listIterator(index: Int): ListIterator<T> {
-        return data.listIterator(index)
-    }
+    override fun listIterator(index: Int): ListIterator<T> = data.listIterator(index)
 
-    override fun subList(fromIndex: Int, toIndex: Int): List<T> {
-        return data.subList(fromIndex, toIndex)
-    }
+    override fun subList(fromIndex: Int, toIndex: Int): List<T> = data.subList(fromIndex, toIndex)
 
-    override fun get(index: Int): T {
-        return data[index]
-    }
+    override fun get(index: Int): T = data[index]
 }
