@@ -20,10 +20,10 @@
 
 package io.teamif.patrick.comcigan
 
-import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import io.teamif.patrick.comcigan.ComciganAPI.open
+import io.teamif.patrick.comcigan.ComciganAPI.openURL
 import java.io.StringReader
 import java.net.URLEncoder
 import java.util.Base64
@@ -47,16 +47,16 @@ class ComciganSchool internal constructor(name: String) {
 
     init {
         val json = "${ComciganAPI.SEARCH_URL}${URLEncoder.encode(name, ComciganAPI.CHARSET)}"
-                .json.asJsonObject.getAsJsonArray("학교검색")
+                .jsonFromURL.getAsJsonArray("학교검색")
 
         when (json.count()) {
             0 -> throw NoSuchElementException("No schools have been searched by the name passed.")
             1 -> json.first().asJsonArray
             else -> throw IllegalArgumentException("More than one school is searched by the name passed.")
-        }.run {
-            schoolName = get(2).asString
-            schoolCode = get(3).asString
-            schoolUrls = listOf(0.schoolUrl, 1.schoolUrl)
+        }.let { array ->
+            schoolName = array[2].asString
+            schoolCode = array[3].asString
+            schoolUrls = listOf(schoolWeekURL(0), schoolWeekURL(1))
 
             refresh()
         }
@@ -66,61 +66,57 @@ class ComciganSchool internal constructor(name: String) {
      * Refreshes the data by parsing the Comcigan Website
      */
     fun refresh() {
-        val weekArray = ArrayList<SchoolWeekData>()
-
-        schoolUrls.map { url ->
-            url.json.asJsonObject.run {
+        schoolData = SchoolRawData(schoolUrls.map { url ->
+            url.jsonFromURL.asJsonObject.run {
                 val shortSubjects = getAsJsonArray(ComciganAPI.SUBJECT_ID).mapNotNull { it.asString }
                 val longSubjects = getAsJsonArray("긴${ComciganAPI.SUBJECT_ID}").mapNotNull { it.asString }
                 val teachers = getAsJsonArray(ComciganAPI.TEACHER_ID).mapNotNull { it.asString }
 
                 val grades = getAsJsonArray(ComciganAPI.DAILY_ID).mapNotNull { it.asJsonArray }.drop(1).filter { it.count() > 0 }
 
-                weekArray.add(
-                        SchoolWeekData(grades.map { grade ->
-                            val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
+                SchoolWeekData(grades.map { grade ->
+                    val classrooms = grade.mapNotNull { it.asJsonArray }.drop(1)
 
-                            SchoolGradeData(classrooms.map { classroom ->
-                                val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
+                    SchoolGradeData(classrooms.map { classroom ->
+                        val days = classroom.mapNotNull { it.asJsonArray }.drop(1)
 
-                                SchoolClassroomData(days.map { day ->
-                                    val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
+                        SchoolClassroomData(days.map { day ->
+                            val codes = day.mapNotNull { it.asString }.drop(1).dropLastWhile { it == "0" }
 
-                                    SchoolDayData(codes.map { code ->
-                                        when (code) {
-                                            "0" -> SchoolPeriodData.NULL
-                                            else -> {
-                                                val subject = code.takeLast(2).toInt()
-                                                val teacher = code.dropLast(2).toInt()
+                            SchoolDayData(codes.map { code ->
+                                when (code) {
+                                    "0" -> SchoolPeriodData.NULL
+                                    else -> {
+                                        val subject = code.takeLast(2).toInt()
+                                        val teacher = code.dropLast(2).toInt()
 
-                                                SchoolPeriodData(
-                                                        shortSubjects[subject],
-                                                        longSubjects[subject],
-                                                        teachers[teacher]
-                                                )
-                                            }
-                                        }
-                                    })
-                                })
+                                        SchoolPeriodData(
+                                                shortSubjects[subject],
+                                                longSubjects[subject],
+                                                teachers[teacher]
+                                        )
+                                    }
+                                }
                             })
                         })
-                )
+                    })
+                })
             }
-        }
-
-        schoolData = SchoolRawData(weekArray)
+        })
     }
 
-    private val Int.schoolUrl: String
-        get() {
-            val byteArray = "${ComciganAPI.PREFIX}${schoolCode}_0_$this".toByteArray()
+    private fun schoolWeekURL(index: Int): String {
+        val byteArray = "${ComciganAPI.PREFIX}${schoolCode}_0_$index".toByteArray()
 
-            return "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encode(byteArray).decodeToString()}"
-                    .run { replace("=", "") }
+        return "${ComciganAPI.BASE_URL}?${Base64.getUrlEncoder().encodeToString(byteArray)}".dropLastWhile {
+            it == '='
         }
+    }
 
-    private val String.json: JsonElement
-        get() = requireNotNull(JsonParser.parseReader(JsonReader(StringReader(open(Charsets.UTF_8))).apply {
-            isLenient = true
-        }))
+    private val String.jsonFromURL: JsonObject
+        get() = requireNotNull(
+                JsonParser.parseReader(JsonReader(StringReader(openURL(Charsets.UTF_8))).apply {
+                    isLenient = true
+                })
+        ) as JsonObject
 }

@@ -64,7 +64,7 @@ object ComciganAPI {
     internal val SEARCH_URL: String
 
     init {
-        SCRIPT = SCRIPT_REGEX.search(("$ROOT_URL/st").open())
+        SCRIPT = SCRIPT_REGEX.search(("$ROOT_URL/st").openURL())
         ROUTE = ROUTE_REGEX.search(SCRIPT)
         PREFIX = PREFIX_REGEX.search(SCRIPT)
         ORIGINAL_ID = ORIGINAL_ID_REGEX.search(SCRIPT)
@@ -75,7 +75,8 @@ object ComciganAPI {
         SEARCH_URL = "$BASE_URL${ROUTE.substring(8)}"
     }
 
-    internal fun String.open(charset: Charset = Charset.forName(CHARSET)): String =
+    @JvmStatic
+    internal fun String.openURL(charset: Charset = Charset.forName(CHARSET)): String =
             URL(this).readText(charset)
 
     /**
@@ -102,6 +103,7 @@ object ComciganAPI {
      * @throws IllegalArgumentException when more than one results found
      * @see [ComciganSchool]
      */
+    @JvmStatic
     @Throws(NoSuchElementException::class, IllegalArgumentException::class)
     fun newSchool(name: String): ComciganSchool = ComciganSchool(name)
 }

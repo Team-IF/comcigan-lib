@@ -34,7 +34,7 @@ plugins {
 }
 
 group = "io.teamif"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     maven("https://repo.maven.apache.org/maven2/")

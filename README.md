@@ -18,7 +18,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'io.teamif:comcigan-lib:1.2.0'
+    implementation 'io.teamif:comcigan-lib:1.2.1'
 }
 ```
 
@@ -34,7 +34,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-    implementation("io.teamif:comcigan-lib:1.2.0")
+    implementation("io.teamif:comcigan-lib:1.2.1")
 }
 ```
 
