@@ -31,7 +31,7 @@ import java.util.regex.Pattern
  */
 object ComciganAPI {
     @JvmStatic
-    private val ROOT_URL = "http://comci.kr:4082"
+    private val ROOT_URL = "http://112.186.226.178:4082"
 
     @JvmStatic
     internal val CHARSET = "EUC-KR"
